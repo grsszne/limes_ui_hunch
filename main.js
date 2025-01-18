@@ -2,6 +2,7 @@ import * as THREE from "three";
 import * as data from "./data.json";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+const doUpdateOnFrame = true;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     60,
@@ -42,20 +43,19 @@ function convertToCartesian(lidarData) {
 }
 
 function plotCartesianPoints(cartesianData, start) {
-
     const sphereGeometry = new THREE.SphereGeometry(0.1, 6, 6);
 
-    const yValues = cartesianData.map(point => point.endpoint.y)
+    const yValues = cartesianData.map((point) => point.endpoint.y);
     const minY = Math.min(...yValues);
     const maxY = Math.max(...yValues);
 
     cartesianData.slice(start).forEach((point) => {
         const normalizedY = (point.endpoint.y - minY) / (maxY - minY);
         const color = new THREE.Color();
-        color.setHSL(0.67 * (1 - normalizedY), 1, 0.5)
+        color.setHSL(0.67 * (1 - normalizedY), 1, 0.5);
 
-        const sphereMaterial = new THREE.MeshBasicMaterial({ color: color })
-        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: color });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         sphere.position.set(
             point.endpoint.x,
             point.endpoint.y,
@@ -67,31 +67,32 @@ function plotCartesianPoints(cartesianData, start) {
 }
 
 const cartesianData = convertToCartesian(data);
-const gridHelperCM = new THREE.GridHelper(1000, 1000, 0x888888, 0xcccccc) 
-const gridHelperM = new THREE.GridHelper(1000, 10, 0xffffff, 0xffffff)
+
+
+const gridHelperCM = new THREE.GridHelper(1000, 1000, 0x888888, 0xcccccc);
+const gridHelperM = new THREE.GridHelper(1000, 10, 0xffffff, 0xffffff);
 
 gridHelperCM.material.opacity = 0.2;
-gridHelperM.material.opacity = 0.5; 
+gridHelperM.material.opacity = 0.5;
 gridHelperCM.material.transparent = true;
-gridHelperM.material.transparent = true
+gridHelperM.material.transparent = true;
+gridHelperM.material.linewidth = 2;
+gridHelperM.position.y = 0.0001;
 
-gridHelperM.material.linewidth = 2; 
-
-gridHelperM.position.y = 0.0001; 
-
-scene.add(gridHelperCM)
-scene.add(gridHelperM)
+scene.add(gridHelperCM);
+scene.add(gridHelperM);
 
 let lastPointIndex = 0;
 
 function animate() {
-    lastPointIndex = plotCartesianPoints(cartesianData, lastPointIndex);
+    if (doUpdateOnFrame) {
+        lastPointIndex = plotCartesianPoints(cartesianData, lastPointIndex);
+    }
     renderer.render(scene, camera);
     scene.rotation.y += 0.001;
-    controls.addEventListener('start', () => {
+    controls.addEventListener("start", () => {
         scene.rotation.y = 0;
     });
-
 }
 camera.lookAt(scene.position);
 

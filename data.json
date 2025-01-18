@@ -171,5 +171,6 @@
             "direction": { "azimuth": 270.0, "elevation": -30.0 },
             "distance": 20.0
         }
-    ]
+    ],
+    "currentOrigin": { "x": 0.0, "y": 0.0, "z": 0.0 }
 }
