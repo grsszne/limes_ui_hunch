@@ -6,13 +6,13 @@ const doUpdateOnFrame = true;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     60,
-    window.innerWidth / window.innerHeight,
+    window.innerWidth / 2 / window.innerHeight,
     0.1,
     1000
 );
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(window.innerWidth / 2, window.innerHeight);
 renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
@@ -97,3 +97,18 @@ function animate() {
 camera.lookAt(scene.position);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+
+//fetch json from 192.168.4.1:8080:
+async function fetchData() {
+    const response = await fetch("http://192.168.4.1:8080/data.json");
+    const data = await response.json();
+    return data;
+}
+async function updateData() {
+    const data = await fetchData();
+
+    console.log("Data");
+    console.log(data);
+}
+
+updateData();
